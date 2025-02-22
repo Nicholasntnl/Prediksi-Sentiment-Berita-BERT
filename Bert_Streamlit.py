@@ -11,6 +11,8 @@ from nltk.stem import WordNetLemmatizer
 import streamlit as st
 import os
 
+torch.classes.__path__ = [] # add this line to manually set it to empty
+
 # Load model
 # MODEL_PATH = "quantized_model.pth"
 # Judul aplikasi
