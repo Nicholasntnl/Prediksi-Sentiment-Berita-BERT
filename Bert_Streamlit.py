@@ -115,20 +115,27 @@ def predict(text, _model, _tokenizer):
 
 # Mengurangi jarak secara maksimal antara label dan text box
 input_text = st.text_area("Masukkan Teks Berita:", height=300)
-
-# CSS untuk merapikan tombol
 st.markdown("""
     <style>
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+        }
         .stButton>button {
             background-color: #74574F;
             color: #FFFFFF;
             border: none;
             border-radius: 5px;
-            margin-left: 545px;
-            margin-top: -10px;
-            padding: 10px 18px;
-            font-size: 30px;
+            padding: 12px 20px;
+            font-size: 20px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .stButton>button:hover {
+            background-color: #5a3e37;
         }
         .result {
             font-family: 'Times New Roman';
@@ -137,29 +144,27 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Jika tombol ditekan, lakukan prediksi
-if st.button("Prediksi Sentimen"):
-    if input_text:
-        model = st.session_state['model']
-        tokenizer = st.session_state['tokenizer']
-        hasil_sentimen = predict(input_text, model, tokenizer)
-        label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive', 3: 'Dual'}
+# Membuat container untuk tombol agar tetap responsif dan berada di kanan
+st.markdown('<div class="button-container">', unsafe_allow_html=True)
+col1, col2 = st.columns([3, 1])  # Kolom agar tombol pindah ke kanan
+with col2:
+    if st.button("Prediksi Sentimen"):
+        if input_text:
+            model = st.session_state['model']
+            tokenizer = st.session_state['tokenizer']
+            hasil_sentimen = predict(input_text, model, tokenizer)
+            label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive', 3: 'Dual'}
 
-        # Menentukan warna berdasarkan hasil prediksi
-        if hasil_sentimen == 0:  # Negative
-            color = "#9b373d"  # Warna merah
-        elif hasil_sentimen == 1:  # Neutral
-            color = "#004278"  # Warna biru
-        elif hasil_sentimen == 2:  # Positive
-            color = "#006c4f"  # Warna hijau
-        elif hasil_sentimen == 3:  # Dual
-            color = "#4d4e56"  # Warna abu
+            # Menentukan warna berdasarkan hasil prediksi
+            color_map = {0: "#9b373d", 1: "#004278", 2: "#006c4f", 3: "#4d4e56"}
+            color = color_map.get(hasil_sentimen, "#000000")
 
-        # Menampilkan hasil dengan warna yang berbeda
-        st.markdown(f"""
-        <div style="border-radius: 0px; padding : 10px; background-color: {color}; color: white;" class="result">
-            Hasil Prediksi : {label_map.get(hasil_sentimen, 'Unknown')}
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.write("Silakan masukkan teks berita untuk diprediksi.")
+            # Menampilkan hasil dengan warna yang berbeda
+            st.markdown(f"""
+            <div style="border-radius: 5px; padding: 10px; background-color: {color}; color: white; text-align: center;" class="result">
+                Hasil Prediksi: {label_map.get(hasil_sentimen, 'Unknown')}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.write("Silakan masukkan teks berita untuk diprediksi.")
+st.markdown('</div>', unsafe_allow_html=True)
